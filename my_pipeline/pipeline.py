@@ -22,7 +22,7 @@ from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.transforms.userstate import ReadModifyWriteStateSpec, BagStateSpec, TimerSpec, \
     CombiningValueStateSpec, on_timer
 from apache_beam.transforms.window import TimestampedValue
-from apache_beam.utils.timestamp import Timestamp, Duration
+from apache_beam.utils.timestamp import Timestamp
 from dateutil import parser
 
 
