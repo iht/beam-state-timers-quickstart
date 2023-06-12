@@ -120,28 +120,11 @@ class FindSessions(beam.DoFn):
                 taxi_ride_events_bag=beam.DoFn.StateParam(TAXI_RIDE_EVENTS_BAG),
                 max_timestamp_seen=beam.DoFn.StateParam(MAX_TIMESTAMP),
                 gc_timer=beam.DoFn.TimerParam(GC_TIMER)) -> Iterable[TaxiSession]:
-        key, taxi_point = element
-        key_state.write(key)
-        taxi_ride_events_bag.add(taxi_point)
-        max_timestamp_seen.add(element_timestamp.micros)
-
-        if taxi_point.ride_status == 'dropoff':
-            session: TaxiSession = self._calculate_session(key_state.read(),
-                                                           taxi_ride_events_bag.read(),
-                                                           SessionReason.DROPOFF_SEEN)
-            # Get max timestamp
-            max_ts: Timestamp = Timestamp(micros=max_timestamp_seen.read())
-            yield TimestampedValue(session, max_ts)
-
-            taxi_ride_events_bag.clear()
-            max_timestamp_seen.clear()
-            gc_timer.clear()
-        else:
-            # Set the timer to be 30 minutes to keep track of inactive keys
-            max_ts: int = Timestamp(micros=max_timestamp_seen.read()).seconds()
-            expiration_seconds: int = max_ts + 60*30
-            expiration_ts: Timestamp = Timestamp(seconds=expiration_seconds)
-            gc_timer.set(expiration_ts)
+        # TODO
+        # Update the state for every new message
+        # Check if end of session is seen, and emit the session data
+        # If not, keep waiting
+        pass
 
     @on_timer(GC_TIMER)
     def expiry_callback(
@@ -149,40 +132,19 @@ class FindSessions(beam.DoFn):
             key_state=beam.DoFn.StateParam(KEY_STATE),
             taxi_ride_events_bag=beam.DoFn.StateParam(TAXI_RIDE_EVENTS_BAG),
             max_timestamp_seen=beam.DoFn.StateParam(MAX_TIMESTAMP)) -> Iterable[TaxiSession]:
-        session: TaxiSession = self._calculate_session(key_state.read(),
-                                                       taxi_ride_events_bag.read(),
-                                                       SessionReason.GARBAGE_COLLECTION)
-
-        max_ts: Timestamp = Timestamp(micros=max_timestamp_seen.read())
-        yield TimestampedValue(session, max_ts)
-
-        taxi_ride_events_bag.clear()
-        max_timestamp_seen.clear()
+        # TODO
+        # The timer has been triggered, you need to emit a session with whatever data has been
+        # accumulated so far
+        pass
 
     @staticmethod
     def _calculate_session(key: str,
                            taxi_ride_events_bag: Iterable[TaxiPoint],
                            session_reason: SessionReason) -> TaxiSession:
-        points: List[TaxiPoint] = list(taxi_ride_events_bag)
-        points.sort(key=lambda p: p.timestamp)
-        first_event: TaxiPoint = points[0]
-        last_event: TaxiPoint = points[-1]
-
-        start_time: float = parser.parse(first_event.timestamp).timestamp()
-        end_time: float = parser.parse(last_event.timestamp).timestamp()
-
-        journey_length_seconds = end_time - start_time
-
-        r = TaxiSession(ride_id=key,
-                        duration=journey_length_seconds,
-                        n_points=len(points),
-                        start_timestamp=first_event.timestamp,
-                        end_timestamp=last_event.timestamp,
-                        start_status=first_event.ride_status,
-                        end_status=last_event.ride_status,
-                        session_reason=session_reason)
-
-        return r
+        # TODO
+        # Since we emit sessions from two different methods, let's use the same function to emit
+        # sessions, so we do it with consistency.
+        pass
 
 
 @beam.ptransform_fn
