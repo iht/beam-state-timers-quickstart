@@ -8,6 +8,8 @@ format and parse it (using Beam schemas), how to aggregate it and write out to f
 We will apply complex analytics to the stream, calculating properties of a session for
 different users, grouping together events of the same session by using windowing.
 
+The slides used during the workshop are available [here](./docs/slides.pdf)
+
 ## Choosing the correct code branch
 
 The "main" branch has code with gaps that are to be completed live in the workshop.
