@@ -10,14 +10,14 @@ different users, grouping together events of the same session by using windowing
 
 ## Choosing the correct code branch
 
-The "main" branch has the complete code for the streaming pipeline.
+The "main" branch has code with gaps that are to be completed live in the workshop.
 
-The "workshop" branch has code with gaps that are to be completed live in the workshop.
+The "solution" branch has the complete code for the streaming pipeline.
 
-Checkout the "workshop" branch and challenge yourself !
+Checkout the "main" branch and challenge yourself !
 
 ```
-git checkout workshop
+git checkout main
 ```
 
 ## Setting up your environment
